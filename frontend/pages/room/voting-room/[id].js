@@ -5,12 +5,20 @@ import Timer from "../../../components/timer";
 import Card from "../../../components/ui/card";
 import { GET_ROOM_BY_ID } from "../../../components/polloTest/GetRoomData";
 import { useLazyQuery } from "@apollo/client";
+import { COLORS } from "../../../styles/colors";
 import { useRouter } from "next/router";
 import CheckboxForm from "../../../components/ui/form/checkbox";
 import Head from "next/head";
 
 export default function VotingRoom() {
   const { query } = useRouter();
+  // timerProps are passed to the Timer component to style the countdown animation
+  const timerProps = {
+    size: 250,
+    strokeWidth: 15,
+    circleOneStroke: `${COLORS.PURPLES.MAIN}`,
+    circleTwoStroke: `${COLORS.PURPLES.LIGHT}`,
+  };
 
   const [roomData, setRoomData] = useState(null);
   const [getRoomByID, { loading, data }] = useLazyQuery(GET_ROOM_BY_ID, {
@@ -44,13 +52,14 @@ export default function VotingRoom() {
       {/* time has to be Number() as it is passed as a string */}
       <Card>
         <Timer
-          key={200}
+          key={Number(roomData.timeLimit)}
           time={Number(roomData.timeLimit)}
           onTimeIsUp={(message) => alert(message)}
+          {...timerProps}
         />
         <CheckboxForm voteOptions={roomData.voteOptions} />
-        <Link href="/">
-          <Button>Home</Button>
+        <Link href="/" passHref>
+          <LinkHome>Home</LinkHome>
         </Link>
       </Card>
     </Container>
@@ -77,7 +86,7 @@ const Description = styled.p`
   margin-left: 1rem;
 `;
 
-const Button = styled.button`
+const LinkHome = styled.a`
   margin-top: 15px;
   padding: 8px;
   border-radius: 5px;
